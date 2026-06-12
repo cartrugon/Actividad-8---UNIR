@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 const db = require('../db');
 
-// GET /api/autores - Obtener todos los autores
 router.get('/', async (req, res) => {
   try {
     const [autores] = await db.query('SELECT * FROM autores');
@@ -12,7 +11,6 @@ router.get('/', async (req, res) => {
   }
 });
 
-// GET /api/autores/:id - Obtener un autor por id
 router.get('/:id', async (req, res) => {
   try {
     const [autores] = await db.query('SELECT * FROM autores WHERE id = ?', [req.params.id]);
@@ -23,7 +21,7 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-// GET /api/autores/:id/posts - Obtener todos los posts de un autor
+// posts de un autor concreto
 router.get('/:id/posts', async (req, res) => {
   try {
     const [autores] = await db.query('SELECT * FROM autores WHERE id = ?', [req.params.id]);
@@ -43,7 +41,6 @@ router.get('/:id/posts', async (req, res) => {
   }
 });
 
-// POST /api/autores - Crear un nuevo autor
 router.post('/', async (req, res) => {
   const { nombre, email, imagen } = req.body;
   if (!nombre || !email) {

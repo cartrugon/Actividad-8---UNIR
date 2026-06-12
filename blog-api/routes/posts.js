@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const db = require('../db');
 
-// Query base: trae posts con todos los datos del autor (JOIN)
+// consulta con JOIN para traer los datos del autor junto al post
 const POSTS_CON_AUTOR = `
   SELECT
     p.id, p.titulo, p.descripcion, p.fecha_creacion, p.categoria, p.creado_en,
@@ -11,7 +11,6 @@ const POSTS_CON_AUTOR = `
   JOIN autores a ON p.autor_id = a.id
 `;
 
-// Formatea una fila de BD a objeto estructurado
 function formatPost(row) {
   return {
     id: row.id,
@@ -29,7 +28,6 @@ function formatPost(row) {
   };
 }
 
-// GET /api/posts - Obtener todos los posts con datos del autor
 router.get('/', async (req, res) => {
   try {
     const [rows] = await db.query(POSTS_CON_AUTOR + ' ORDER BY p.fecha_creacion DESC');
@@ -39,7 +37,6 @@ router.get('/', async (req, res) => {
   }
 });
 
-// GET /api/posts/:id - Obtener un post por id con datos del autor
 router.get('/:id', async (req, res) => {
   try {
     const [rows] = await db.query(POSTS_CON_AUTOR + ' WHERE p.id = ?', [req.params.id]);
@@ -50,7 +47,6 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-// POST /api/posts - Crear un nuevo post
 router.post('/', async (req, res) => {
   const { titulo, descripcion, fecha_creacion, categoria, autor_id } = req.body;
   if (!titulo || !descripcion || !fecha_creacion || !categoria || !autor_id) {
@@ -61,7 +57,6 @@ router.post('/', async (req, res) => {
       'INSERT INTO posts (titulo, descripcion, fecha_creacion, categoria, autor_id) VALUES (?, ?, ?, ?, ?)',
       [titulo, descripcion, fecha_creacion, categoria, autor_id]
     );
-    // Devolvemos el post creado con los datos del autor
     const [rows] = await db.query(POSTS_CON_AUTOR + ' WHERE p.id = ?', [result.insertId]);
     res.status(201).json(formatPost(rows[0]));
   } catch (error) {
